@@ -28,3 +28,25 @@ Button {
 #reset {
     dock: right;
 }
+
+.started {
+    /* Quando começar, o fundo fica verde e o contador vai de cinza pra branco */
+    background: $success-muted;
+    color: $text;
+}
+
+.started TimeDisplay {
+    color: $foreground;
+}
+
+.started #start {
+    display: none;
+}
+
+.started #stop {
+    display: block
+}
+
+.started #reset {
+    visibility: hidden;
+}

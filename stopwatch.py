@@ -9,6 +9,13 @@ class TimeDisplay(Digits):
 class Stopwatch(HorizontalGroup):
    # o widget de cronometro, que vai agrupar os outros
 
+   def on_button_pressed(self, event: Button.Pressed) -> None:
+       # o que deve acontecer quando um botão é pressionado
+       if event.button.id == "start":
+           self.add_class("started")
+       elif event.button.id == "stop":
+           self.remove_class("started")
+
    def compose(self) -> ComposeResult:
        yield Button("Start", id="start", variant="success")
        yield Button("Stop", id="stop", variant="error")
