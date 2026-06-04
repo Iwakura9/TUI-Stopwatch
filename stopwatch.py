@@ -8,27 +8,48 @@ from textual.reactive import reactive
 class TimeDisplay(Digits):
     start_time = reactive(monotonic)
     time = reactive(0.0)
+    total = reactive(0.0)
 
     def on_mount(self) -> None:
-        self.set_interval(1 / 60, self.update_time)
+        self.update_timer = self.set_interval(1/60, self.update_time, pause=True)
 
     def update_time(self) -> None:
-        self.time = monotonic() - self.start_time
+        self.time = self.total + (monotonic() - self.start_time)
 
     def watch_time(self, time: float) -> None:
         minutes, seconds = divmod(time, 60)
         hours, minutes = divmod(minutes, 60)
         self.update(f"{hours:02.0f}:{minutes:02.0f}:{seconds:05.2f}")
 
+    def start(self) -> None:
+        self.start_time = monotonic()
+        self.update_timer.resume()
+
+    def stop(self) -> None:
+        self.update_timer.pause()
+        self.total += monotonic() - self.start_time
+        self.time = self.total
+
+    def reset(self) -> None:
+        self.total = 0
+        self.time = 0
+
 class Stopwatch(HorizontalGroup):
    # o widget de cronometro, que vai agrupar os outros
 
    def on_button_pressed(self, event: Button.Pressed) -> None:
        # o que deve acontecer quando um botão é pressionado
-       if event.button.id == "start":
+       button_id = event.button.id
+       time_display = self.query_one(TimeDisplay)
+
+       if button_id == "start":
+           time_display.start()
            self.add_class("started")
-       elif event.button.id == "stop":
+       elif button_id == "stop":
+           time_display.stop()
            self.remove_class("started")
+       elif button_id == "reset":
+           time_display.reset()
 
    def compose(self) -> ComposeResult:
        yield Button("Start", id="start", variant="success")
