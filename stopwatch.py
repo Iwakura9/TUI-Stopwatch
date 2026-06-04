@@ -61,7 +61,7 @@ class StopwatchApp(App):
 
     CSS_PATH = "stopwatchStyle.tcss"
     BINDINGS = [
-        ("d", "toggle_dark", "toggle dark mode"),
+        ("d", "toggle_dark", "Toggle dark mode"),
         ("a", "add_stopwatch", "Add"),
         ("r", "remove_stopwatch", "Remove"),
     ]
