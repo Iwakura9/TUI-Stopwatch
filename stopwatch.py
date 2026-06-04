@@ -1,10 +1,24 @@
+from time import monotonic
+
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, Button, Digits
 from textual.containers import HorizontalGroup, VerticalScroll
+from textual.reactive import reactive
 
 class TimeDisplay(Digits):
-    # o widget para mostrar o tempo passado
-    pass
+    start_time = reactive(monotonic)
+    time = reactive(0.0)
+
+    def on_mount(self) -> None:
+        self.set_interval(1 / 60, self.update_time)
+
+    def update_time(self) -> None:
+        self.time = monotonic() - self.start_time
+
+    def watch_time(self, time: float) -> None:
+        minutes, seconds = divmod(time, 60)
+        hours, minutes = divmod(minutes, 60)
+        self.update(f"{hours:02.0f}:{minutes:02.0f}:{seconds:05.2f}")
 
 class Stopwatch(HorizontalGroup):
    # o widget de cronometro, que vai agrupar os outros
@@ -20,7 +34,7 @@ class Stopwatch(HorizontalGroup):
        yield Button("Start", id="start", variant="success")
        yield Button("Stop", id="stop", variant="error")
        yield Button("Reset", id="reset")
-       yield TimeDisplay("00:00:00.00")
+       yield TimeDisplay()
 
 class StopwatchApp(App):
 
