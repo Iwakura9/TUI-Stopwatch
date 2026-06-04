@@ -61,14 +61,26 @@ class StopwatchApp(App):
 
     CSS_PATH = "stopwatchStyle.tcss"
     BINDINGS = [
-        ("d", "toggle_dark", "toggle dark mode")
+        ("d", "toggle_dark", "toggle dark mode"),
+        ("a", "add_stopwatch", "Add"),
+        ("r", "remove_stopwatch", "Remove"),
     ]
 
     def compose(self) -> ComposeResult:
         # cria widgets para o app (header e footer)
         yield Header()
         yield Footer()
-        yield VerticalScroll(Stopwatch())
+        yield VerticalScroll(Stopwatch(), id="timers")
+
+    def action_add_stopwatch(self) -> None:
+        new_stopwatch = Stopwatch()
+        self.query_one("#timers").mount(new_stopwatch)
+        new_stopwatch.scroll_visible()
+
+    def action_remove_stopwatch(self) -> None:
+        timers = self.query("Stopwatch")
+        if timers:
+            timers.last().remove()
 
     def action_toggle_dark(self) -> None:
 
